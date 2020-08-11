@@ -8,9 +8,9 @@ import Rosalind_Problems
 import style
 
 class Window(QMainWindow):
-    def __init__(self):
+    def __init__(self, name= "User"):
         super().__init__()
-        self.setWindowTitle("GENOMIA")
+        self.setWindowTitle("GENOMIA--{}".format(name))
         self.setWindowIcon(QIcon('Project/icons/bio1.ico'))
         self.setGeometry(450, 100, 1150, 950)
         self.setFixedSize(self.size())

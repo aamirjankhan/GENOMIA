@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 import style
+import Simulation_Project
+import re
 import sqlite3
 
                         # border-style:outset;
@@ -18,7 +20,6 @@ query1= '''
 	id integer PRIMARY KEY AUTOINCREMENT,
 	name text NOT NULL,
 	surname text NOT NULL,
-	user_type text NOT NULL,
 	username text NOT NULL,
 	password text NOT NULL
 	);
@@ -27,7 +28,6 @@ query1= '''
 try:
     cur.execute(query1)
     conn.commit()
-    cur.close()
 except:
     print("table not created...")
 
@@ -95,12 +95,12 @@ class Window(QWidget):
         pixmap5 = QPixmap('Project/icons/eye.png')
         pixmap6 = pixmap5.scaled(30, 30)
         pixmap6.save("Project/icons/eye_resized.png")
-        self.label5= QLabel(self)
+        # self.label5= QLabel(self)
         # self.label5.setPixmap(pixmap6)
         self.pas= QPushButton(self)
         self.pas.setStyleSheet("background-image : url(Project/icons/eye_resized.png);")
         self.pas.resize(30, 30)
-        self.label5.setPixmap(pixmap6)
+        # self.label5.setPixmap(pixmap6)
         self.pas.clicked.connect(self.showPass)
         grid2.addWidget(self.pas, 0, 3)
         self.label6= QLabel("Use 8 or more characters with a mix of letters\nnumbers & symbols", self)
@@ -149,12 +149,111 @@ class Window(QWidget):
         mainLayout.addLayout(rightLayout)
         self.setLayout(mainLayout)
     def SignIn(self):
-        pass
+        self.window2 = Login()
+        self.close()
     def Proceed(self):
-        pass
+        name= self.nameTextBox.text()
+        surname= self.surnameTextBox.text()
+        username= self.username.text()
+        password= self.password.text()
+        confirmPassword= self.confirmPassword.text()
+
+        if (name and surname and username != "") and (password == confirmPassword) and (re.findall(r"\w+[\/?<>,.!@#$%^&*]+\w*", password) != "") and (len(password)>=8):
+            try:
+                query = "INSERT INTO Login (name,surname,username,password) VALUES(?,?,?,?)"
+                cur.execute(query, (name, surname, username, password))
+                conn.commit()
+                QMessageBox.information(self, "Success", "New User Created")
+
+            except:
+                QMessageBox.information(self, "Warning", "Person has not been added")
+
+            self.window2 = Simulation_Project.Window(name= name)
+            self.close()
+
+
+
+
+
     def showPass(self):
         self.password.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
         self.confirmPassword.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
+
+
+class Login(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("LOGIN SYSTEM")
+        self.setWindowIcon(QIcon('Project/icons/LOGIN.png'))
+        self.setGeometry(450, 100, 600, 350)
+        self.setStyleSheet('''
+                                background-color: white;
+                                font:16px;
+                                ''')
+        self.setFixedSize(self.size())
+        self.UI()
+        self.show()
+    def UI(self):
+        mainLayout= QHBoxLayout()
+        leftLayout = QVBoxLayout()
+        rightLayout = QVBoxLayout()
+
+        # right layout####################################################################
+        pixmap1 = QPixmap('Project/icons/account.png')
+        pixmap2 = pixmap1.scaled(200, 200)
+        self.label1 = QLabel(self)
+        self.label1.setPixmap(pixmap2)
+        rightLayout.addWidget(self.label1)
+        self.label2 = QLabel("One account, All of Genomia\nworking for you")
+        rightLayout.addWidget(self.label2)
+        rightLayout.addStretch()
+        # left layout#####################################################################
+        vbox= QVBoxLayout()
+        self.username = QLineEdit(self)
+        self.username.setPlaceholderText("Username")
+        self.label3 = QLabel("Enter Your Username", self)
+        self.password = QLineEdit(self)
+        self.password.setPlaceholderText("Password")
+        self.password.setEchoMode(QLineEdit.Password)
+        self.label4= QLabel("Enter Your Password", self)
+        self.check= QPushButton("Sign-in", self)
+        self.check.clicked.connect(self.SignIn)
+        self.check.setStyleSheet('''
+                background-color: #3399ff;
+                border-style:outset;
+                border-width:0px;
+                border-radius:10px;
+                border-color:#3399ff;
+                font:16pt Times Bold;
+                padding:6px;
+                min-width:6em;
+                ''')
+        vbox.addWidget(self.username)
+        vbox.addWidget(self.label3)
+        vbox.addWidget(self.password)
+        vbox.addWidget(self.label4)
+        vbox.addWidget(self.check)
+        vbox.addStretch()
+        leftLayout.addLayout(vbox)
+        mainLayout.addLayout(leftLayout)
+        mainLayout.addLayout(rightLayout)
+
+        self.setLayout(mainLayout)
+
+
+    def SignIn(self):
+        username= self.username.text()
+        password= self.password.text()
+        if (username and password != ""):
+            try:
+                found= cur.execute("SELECT * FROM Login WHERE username= ? and password= ?",(username, password)).fetchone()
+                self.window2 = Simulation_Project.Window(name=found[1])
+                self.close()
+
+            except:
+                QMessageBox.information(self, "Warning", "Longin Failed")
+
+
 
 
 
