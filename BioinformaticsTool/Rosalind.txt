@@ -1,0 +1,9 @@
+Job_name : finding motifs
+job_id : 09/08/2020 21:14:53
+[2, 4, 10]
+Job_name : clear screen
+job_id : 09/08/2020 21:14:58
+Clear screen
+Job_name : clear screen
+job_id : 09/08/2020 21:15:38
+Clear screen

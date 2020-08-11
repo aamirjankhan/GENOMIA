@@ -222,7 +222,7 @@ class Window(QMainWindow):
     def align_func(self):
         self.window= Protein_Alignment.Window()
     def exit_func(self):
-        self.window.close()
+        sys.exit()
 
 
 
@@ -234,6 +234,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-class Conversions(QWidget):
-    def __init__(self):
-        super().__init__()

@@ -13,7 +13,7 @@ class Window(QWidget):
         super().__init__()
         self.setWindowTitle("CONVERSIONS")
         self.setWindowIcon(QIcon('Project/icons/convert1.png'))
-        self.setGeometry(450,180,1150,880)
+        self.setGeometry(450,190,1150,860)
         self.setFixedSize(self.size())
         self.setStyleSheet('''
         background-color: white;

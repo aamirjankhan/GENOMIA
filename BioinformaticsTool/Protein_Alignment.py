@@ -11,7 +11,7 @@ class Window(QWidget):
         super().__init__()
         self.setWindowTitle("ALIGNMENT")
         self.setWindowIcon(QIcon('Project/icons/align.png'))
-        self.setGeometry(450,180,1150,880)
+        self.setGeometry(450,190,1150,860)
         self.setFixedSize(self.size())
         self.setStyleSheet('''
         background-color: white;
@@ -48,12 +48,18 @@ class Window(QWidget):
         self.combo.setStyleSheet(style.combo())
         self.combo.addItems(["Global Alignment", "Local Alignment"])
 
+        self.combo1= QComboBox(self)
+        self.combo1.setStyleSheet(style.combo())
+        self.combo1.addItems(["blosum45","blosum50","blosum62","blosum80","blosum90","pam30","pam60","pam250"])
+
         vbox.addWidget(self.path1)
         vbox.addWidget(self.path2)
         vbox.addWidget(self.editor)
 
         gridlayout.addWidget(alignButton, 0, 0)
         gridlayout.addWidget(self.combo, 0, 1)
+        gridlayout.addWidget(self.combo1, 0, 2)
+
 
         mainLayout.addLayout(vbox)
         mainLayout.addLayout(gridlayout)
@@ -66,21 +72,23 @@ class Window(QWidget):
         file1 = self.path1.text()
         file2 = self.path2.text()
         value = self.combo.currentText()
+        value_matrix= self.combo1.currentText()
+
         mbox1 = QMessageBox()
         if value == "Global Alignment":
-            if Allignment_.pairwise_align_global(file1, file2) == 'Fatal':
+            if Allignment_.pairwise_align_global(file1, file2, value_matrix) == 'Fatal':
                 mbox1.information(self, 'Error', 'File not Found in Box1 or Box2!!!')
             else:
-                _, align = Allignment_.pairwise_align_global(file1, file2)
+                _, align = Allignment_.pairwise_align_global(file1, file2, value_matrix)
                 self.editor.setText(align)
                 job = '''Job_name : global alignment\njob_id : {}\n{}\n'''.format(dt_string,self.editor.toPlainText())
                 fr.write(job)
 
         elif value == "Local Alignment":
-            if Allignment_.pairwise_align_local(file1, file2) == 'Fatal':
+            if Allignment_.pairwise_align_local(file1, file2, value_matrix) == 'Fatal':
                 mbox1.information(self, 'Error', 'File not Found in Box1 or Box2!!!')
             else:
-                _, align = Allignment_.pairwise_align_local(file1, file2)
+                _, align = Allignment_.pairwise_align_local(file1, file2, value_matrix)
                 self.editor.setText(align)
                 job = '''Job_name : local alignment\njob_id : {}\n{}\n'''.format(dt_string,self.editor.toPlainText())
                 fr.write(job)
